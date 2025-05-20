@@ -1,0 +1,2 @@
+# Hinvec
+Hindi Embedding Model
