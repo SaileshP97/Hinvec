@@ -18,17 +18,15 @@ from transformers import (
     TrainingArguments,
     Trainer,
     DataCollatorForSeq2Seq,
+    AutoConfig,
 )
 from transformers.trainer_callback import EarlyStoppingCallback
-from transformers.integrations import HfDeepSpeedConfig
+from accelerate import init_empty_weights, load_checkpoint_and_dispatch, dispatch_model, infer_auto_device_map
 
 from peft import LoraConfig, prepare_model_for_kbit_training, get_peft_model
 import wandb
-import deepspeed
-from deepspeed.utils.zero_to_fp32 import convert_zero_checkpoint_to_fp32_state_dict
 
-
-from ganga_modeling import EmbeddingModel
+from ganga_modeling import EmbeddingModel, BidirectionalMistralModel, BidirectionalMistralConfig
 
 random.seed(42)
 torch.manual_seed(42)
@@ -85,26 +83,21 @@ class CustomDataCollator(DataCollatorForSeq2Seq):
 
 def set_model_and_tokenizer(args):
     logger.info(f"Loading {args.model_name} Model")
-    
-    # For DeepSpeed pipeline parallelism, we need to avoid automatic device placement
-    # The model will be placed on devices by DeepSpeed based on pipeline configuration
-    if args.deepspeed and args.model_parallel_size > 1:
-        logger.info(f"Setting up model for pipeline parallelism with {args.model_parallel_size} stages")
-        base_model = AutoModel.from_pretrained(args.model_name,
-                                            torch_dtype=torch.bfloat16,
-                                            #attn_implementation="flash_attention_2",
-                                            )
-    elif args.use_devicemap_auto:
+
+    if args.use_devicemap_auto:
+        
         base_model = AutoModel.from_pretrained(args.model_name,
                                         torch_dtype=torch.bfloat16,
                                         #attn_implementation="flash_attention_2",
                                         device_map="auto",
                                         )
     else:
+        
         base_model = AutoModel.from_pretrained(args.model_name,
                                             torch_dtype=torch.bfloat16,
                                             #attn_implementation="flash_attention_2",
-                                            )
+                                            #device_map="auto"
+                                            ).to("cuda")
         
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
     tokenizer.padding_side = 'left'
@@ -131,9 +124,6 @@ def set_model_and_tokenizer(args):
     
     # Create embedding model wrapper
     base_model.config.use_cache = False
-    #model = EmbeddingModel(base_model, pooling_type=args.pooling_type)
-    from transformers import AutoConfig
-    from ganga_modeling import BidirectionalMistralConfig, BidirectionalMistralModel
 
     original_config = AutoConfig.from_pretrained(args.model_name)
     bidir_config = BidirectionalMistralConfig(**original_config.to_dict())
@@ -141,8 +131,20 @@ def set_model_and_tokenizer(args):
     bidir_model.load_state_dict(base_model.state_dict())
     bidir_model = bidir_model.to(torch.float16)
 
-    model = EmbeddingModel(bidir_model, pooling_type=args.pooling_type)
-    
+    bidir_model = EmbeddingModel(bidir_model, pooling_type=args.pooling_type)
+
+    device_map = infer_auto_device_map(
+        bidir_model,
+        max_memory={0: "0.65GB",
+                    1: "0.65GB", 
+                    2: "0.65GB", 
+                    3: "0.65GB"},
+        no_split_module_classes=["MistralDecoderLayer"],
+        dtype=torch.float16
+    )
+
+    model = dispatch_model(bidir_model, device_map=device_map)
+
     return model, tokenizer
 
 def InfoNCELoss(query_embeddings, key_embeddings, ids, temperature=0.05):
@@ -192,79 +194,6 @@ class CustomTrainer(Trainer):
         
         return loss, None, None
 
-def create_deepspeed_config(args):
-    """Create DeepSpeed configuration based on provided arguments."""
-    # Calculate the number of data parallel processes
-    # For 8 GPUs with model split across 2 GPUs, we'd have 4 data parallel groups
-    data_parallel_size = args.num_gpus // args.model_parallel_size
-    
-    config = {
-
-        "train_micro_batch_size_per_gpu": args.batch_size,
-        "gradient_accumulation_steps": args.gradient_accumulation_steps,
-        "gradient_clipping": 1.0,
-        
-        "fp16": {
-            "enabled": args.use_fp16,
-        },
-        "bf16": {
-            "enabled": not args.use_fp16,  # Use bf16 if fp16 is not enabled
-        },
-        
-        "zero_optimization": {
-            "stage": args.deepspeed_stage,
-            "contiguous_gradients": True,
-            "overlap_comm": True,
-            "reduce_scatter": True,
-            "reduce_bucket_size": 5e8,
-            "allgather_bucket_size": 5e8,
-            "stage3_gather_16bit_weights_on_model_save": True,
-        },
-        
-        "optimizer": {
-            "type": "AdamW",
-            "params": {
-                "lr": args.learning_rate,
-                "weight_decay": args.weight_decay,
-                "betas": [0.9, 0.999],
-                "eps": 1e-8,
-            }
-        },
-        
-        "scheduler": {
-            "type": "WarmupLR",
-            "params": {
-                "warmup_min_lr": 0,
-                "warmup_max_lr": args.learning_rate,
-                "warmup_num_steps": 100,
-            }
-        },
-        
-    }
-    
-    if args.deepspeed_stage >= 2:
-        # Add offloading config for stage 2 and 3
-        config["zero_optimization"]["offload_optimizer"] = {
-            "device": "cpu",
-            "pin_memory": True
-        }
-        
-    if args.deepspeed_stage == 3:
-        # Add parameter offloading for stage 3
-        config["zero_optimization"]["offload_param"] = {
-            "device": "cpu",
-            "pin_memory": True
-        }
-    
-    # Save config to file
-    os.makedirs('deepspeed_configs', exist_ok=True)
-    config_path = os.path.join('deepspeed_configs', f'ds_config_stage_{args.deepspeed_stage}_mp{args.model_parallel_size}_dp{data_parallel_size}.json')
-    with open(config_path, 'w') as f:
-        json.dump(config, f, indent=4)
-    
-    logger.info(f"Created DeepSpeed config with model parallel size: {args.model_parallel_size}, data parallel size: {data_parallel_size}")
-    
-    return config_path
 
 def main():
     parser = argparse.ArgumentParser(description="Fine Tuning Embedding Model with InfoNCE Loss using DeepSpeed")
@@ -285,6 +214,7 @@ def main():
     parser.add_argument("--save_steps", type=int, default=500, help="Save checkpoint every X steps")
     parser.add_argument("--steps_per_epoch", type=int, default=None, help="Steps per epoch for scheduler (calculated if None)")
     parser.add_argument("--eval_steps", type=int, default=500, help="Steps after which evaluation is done.")
+    parser.add_argument("--gradient_accumulation_steps", type=int, default=1, help="gradient_accumulation_steps.")
     
     # Data arguments
     parser.add_argument("--data_dir", type=str, default="./new_training_data", help="Directory with JSONL files")
@@ -300,14 +230,6 @@ def main():
     parser.add_argument("--lora_dropout", type=float, help="LoRA dropout probability")
     parser.add_argument("--lora_target_modules", type=str, help="Comma-separated list of target modules for LoRA")
 
-    # DeepSpeed arguments
-    parser.add_argument("--deepspeed", action="store_true", help="Enable DeepSpeed")
-    parser.add_argument("--deepspeed_stage", type=int, default=3, choices=[1, 2, 3], help="DeepSpeed ZeRO stage")
-    parser.add_argument("--deepspeed_config", type=str, default=None, help="Path to DeepSpeed config file (generated if None)")
-    parser.add_argument("--gradient_accumulation_steps", type=int, default=1, help="Number of gradient accumulation steps")
-    parser.add_argument("--num_gpus", type=int, default=8, help="Total number of GPUs available for training")
-    parser.add_argument("--model_parallel_size", type=int, default=2, help="Number of GPUs to shard each model instance across")
-    
     # wandb use_wandb
     parser.add_argument("--use_wandb", action="store_false", help="Enable wandb")
     
@@ -318,10 +240,6 @@ def main():
     parser.add_argument("--local_rank", type=int, default=-1, help="Local rank for distributed training")
     
     args = parser.parse_args()
-
-    # Set up distributed training for DeepSpeed
-    if args.deepspeed:
-        deepspeed.init_distributed()
     
     # Setup model
     model, tokenizer = set_model_and_tokenizer(args)
@@ -334,33 +252,14 @@ def main():
     train_dataset = MultiTaskDataset(train_dataset, tokenizer, args.max_length, args.max_length)
     val_dataset = MultiTaskDataset(val_dataset, tokenizer, args.max_length, args.max_length)
 
-    args.steps_per_epoch = math.ceil(len(train_dataset)/(args.batch_size*args.num_gpus))
 
-    # Setup DeepSpeed
-    if args.deepspeed:
-        if not args.deepspeed_config:
-            args.deepspeed_config = create_deepspeed_config(args)
-        logger.info(f"Using DeepSpeed with config file: {args.deepspeed_config}")
-
-    # Initialize wandb on rank 0 only
-    if not args.use_devicemap_auto:
-
-        if torch.distributed.get_rank() == 0:
-            if args.use_wandb:
-                wandb.init(
-                            project = 'HinVec',
-                            name = f"{args.model_name}-{args.pooling_type}-{args.batch_size}-{args.num_epochs}",
-                            config=vars(args)
-                        )
-                wandb.watch(model, log="all", log_freq=1)
-    else:
-        if args.use_wandb:
-                wandb.init(
-                            project = 'HinVec',
-                            name = f"{args.model_name}-{args.pooling_type}-{args.batch_size}-{args.num_epochs}",
-                            config=vars(args)
-                        )
-                wandb.watch(model, log="all", log_freq=1)
+    if args.use_wandb:
+        wandb.init(
+                    project = 'HinVec',
+                    name = f"{args.model_name}-{args.pooling_type}-{args.batch_size}-{args.num_epochs}",
+                    config=vars(args)
+                )
+        wandb.watch(model, log="all", log_freq=1)
 
     output_dir = f"{args.output_dir}-{args.pooling_type}-{args.batch_size}-epoch-{args.num_epochs}"
 
@@ -387,8 +286,6 @@ def main():
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         max_grad_norm=1.0,
         report_to="wandb",
-        deepspeed=args.deepspeed_config,
-        local_rank=args.local_rank,
     )
 
     # Create trainer
@@ -404,38 +301,11 @@ def main():
         callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
     )
 
-    if torch.distributed.get_rank() in [-1, 0]:
-
-        for name, module in model.named_modules():
-            if hasattr(module, 'weight') and module.weight is not None:
-                print(f"{name}: {module.weight.device}")
     # Start training
     trainer.train()
-    
-    if torch.distributed.get_rank() in [-1, 0]:
-        logger.info("Saving best model")
 
-        best_model_dir = trainer.state.best_model_checkpoint
-
-        output_dir = os.path.join(trainer.args.output_dir, "best_model")    
-
-        convert_zero_checkpoint_to_fp32_state_dict(best_model_dir, output_dir)
-
-        #state_dict = torch.load(f"{output_dir}/pytorch_model.bin")
-
-        #if torch.distributed.get_rank() in [-1, 0]:
-        #    base_model2 = AutoModel.from_pretrained(args.model_name)
-        #    model2 = EmbeddingModel(base_model2, args.pooling_type)
-        #    model2.load_state_dict(state_dict)
-        #    model2.base_model.save_pretrained(output_dir)
-    
-    #checkpoint_dir = os.path.join(trainer.args.output_dir, "checkpoint-5522")
-    #model.load_state_dict(state_dict)
-    #trainer.deepspeed.save_checkpoint(checkpoint_dir)
-    #fp32_model = load_state_dict_from_zero_checkpoint(trainer.model.base_model, checkpoint_dir)
-    #fp32_model.save_pretrained(os.path.join(output_dir, "best-model2"))
-
-    #    model.base_model.save_checkpoint(os.path.join(output_dir, "best-model"))
+    trainer.save_model(output_dir)
+    logger.info(f"Model saved to {output_dir}")
 
 
 if __name__ == "__main__":

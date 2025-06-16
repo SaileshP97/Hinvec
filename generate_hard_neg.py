@@ -77,3 +77,11 @@ if __name__ == "__main__":
                 for sample in training_data:
                     json.dump(sample, f, ensure_ascii=False)
                     f.write('\n')
+
+    loguru.logger.info("Generation complete, saving final data...")
+    with open("./new_training_data/train_data_with_hard_negative.jsonl", "w") as f:
+        for sample in training_data:
+            json.dump(sample, f, ensure_ascii=False)
+            f.write('\n')
+    loguru.logger.info("Final data saved successfully.")
+    loguru.logger.info("Hard negative generation completed.")
