@@ -65,18 +65,12 @@ def main():
               'Cohere__Cohere-embed-multilingual-v3.0', 'OrdalieTech__Solon-embeddings-large-0.1',
               'Alibaba-NLP__gte-Qwen2-1.5B-instruct', 'Lajavaness__bilingual-embedding-large',
               'Salesforce__SFR-Embedding-2_R', 'intfloat__multilingual-e5-large-instruct', 
-              'Ganga_org', 'Ganga_1024',
-              'ganga-2-1b-embeddings-full-mean-32', 'ganga-2-1b-embeddings-new-equal-mean-32',
-              'ganga-2-1b-embeddings-new-full-mean-32', 'ganga-2-1b-embeddings-new-full-mean-32-epoch-3',
-              'ganga-2-1b-embeddings-new-equall-finetune-mean-32-epoch-1',
-              'ganga-2-1b-embeddings-new-equall-finetune-2-mean-32-epoch-1',
-              'ganga-2-1b-embeddings-new-equall-finetune-3-mean-32-epoch-1',
-              'ganga-2-1b-embeddings-new-equall-finetune-final-2-mean-32-epoch-1',
-              'ganga-2-1b-embeddings-new-equall-finetune-final-mean-32-epoch-1',
+              'Ganga_org',
+              'ganga-2-1b-embeddings-new-equal-mean-32',
+              'ganga-2-1b-embeddings-new-equall-eos-42-epoch-1'
               'ganga-2-1b-embeddings-new-equall-bidir-mean-42-epoch-1',
               'ganga-2-1b-embeddings-new-equall-bidir-eos-42-epoch-1',
-              'Sailesh97__Hinvec',
-              'ganga-2-1b-embeddings-new-equall-eos-42-epoch-1']
+              'Sailesh97__Hinvec']
     
     tasks = ["BelebeleRetrieval", "XQuADRetrieval", "IndicCrosslingualSTS",
              "WikipediaRerankingMultilingual", "XNLI", "SIB200ClusteringS2S",
