@@ -189,6 +189,9 @@ class EmbeddingModel(nn.Module):
         elif self.pooling_type == "cls":
             # Use [CLS] token embedding
             embeddings = outputs.last_hidden_state[:, 0]
+        elif self.pooling_type == "eos":
+            # Use [EOS] token embedding
+            embeddings = outputs.last_hidden_state[:, -1]
         else:
             raise ValueError(f"Unsupported pooling type: {self.pooling_type}")
             

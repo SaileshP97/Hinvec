@@ -65,14 +65,18 @@ def main():
               'Cohere__Cohere-embed-multilingual-v3.0', 'OrdalieTech__Solon-embeddings-large-0.1',
               'Alibaba-NLP__gte-Qwen2-1.5B-instruct', 'Lajavaness__bilingual-embedding-large',
               'Salesforce__SFR-Embedding-2_R', 'intfloat__multilingual-e5-large-instruct', 
-              'Ganga_mean', 'Ganga_org', 'Ganga_all_data', 'Ganga_1024', 'ganga-2-1b-embeddings-full-mean-16',
+              'Ganga_org', 'Ganga_1024',
               'ganga-2-1b-embeddings-full-mean-32', 'ganga-2-1b-embeddings-new-equal-mean-32',
               'ganga-2-1b-embeddings-new-full-mean-32', 'ganga-2-1b-embeddings-new-full-mean-32-epoch-3',
               'ganga-2-1b-embeddings-new-equall-finetune-mean-32-epoch-1',
               'ganga-2-1b-embeddings-new-equall-finetune-2-mean-32-epoch-1',
               'ganga-2-1b-embeddings-new-equall-finetune-3-mean-32-epoch-1',
               'ganga-2-1b-embeddings-new-equall-finetune-final-2-mean-32-epoch-1',
-              'ganga-2-1b-embeddings-new-equall-finetune-final-mean-32-epoch-1']
+              'ganga-2-1b-embeddings-new-equall-finetune-final-mean-32-epoch-1',
+              'ganga-2-1b-embeddings-new-equall-bidir-mean-42-epoch-1',
+              'ganga-2-1b-embeddings-new-equall-bidir-eos-42-epoch-1',
+              'Sailesh97__Hinvec',
+              'ganga-2-1b-embeddings-new-equall-eos-42-epoch-1']
     
     tasks = ["BelebeleRetrieval", "XQuADRetrieval", "IndicCrosslingualSTS",
              "WikipediaRerankingMultilingual", "XNLI", "SIB200ClusteringS2S",
@@ -84,6 +88,8 @@ def main():
     model_report = {}
     
     for model in models:
+
+        print(model)
 
         task_report = {}
         for task in tasks:
@@ -114,7 +120,17 @@ def main():
 
             elif model.split('-')[0] == 'ganga':
                 taskss = f"results/{model}/no_model_name_available/no_revision_available/{task}.json"
-                print(model)
+
+                with open(taskss, 'r') as f:
+                    report = json.load(f)
+            
+            elif model in ["Hinvec", "Hinvec2"]:
+                taskss = f"results/{model}/no_model_name_available/no_revision_available/{task}.json"
+
+                with open(taskss, 'r') as f:
+                    report = json.load(f)
+            elif model == "Sailesh97__Hinvec":
+                taskss = f"results/{model}/d4fc678720cc1b8c5d18599ce2d9a4d6090c8b6b/{task}.json"
 
                 with open(taskss, 'r') as f:
                     report = json.load(f)
