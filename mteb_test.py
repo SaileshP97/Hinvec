@@ -130,8 +130,11 @@ class CustomModel:
             if self.pooling_type == "mean":
 
                 token_embeddings = outputs.last_hidden_state
-                attention_mask = inputs['attention_mask']
-                
+                if self.model.config.model_type == "x":
+                    attention_mask = torch.ones(100).to(inputs['attention_mask'].device)
+                else:
+                    attention_mask = inputs['attention_mask']
+
                 input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
                 
                 sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
@@ -201,7 +204,7 @@ def main():
     
     model_name = args.model_name.split('/')[1]
     evaluation = mteb.MTEB(tasks=tasks)
-    evaluation.run(model, encode_kwargs={"batch_size": 2048}, output_folder=f"results/{model_name}")
+    evaluation.run(model, encode_kwargs={"batch_size": 3000}, output_folder=f"results/{model_name}")
 
 if __name__ == "__main__":
     main()

@@ -14,7 +14,7 @@ MAX_LENGTH=512
 LEARNING_RATE=2e-6  # Lower learning rate for full model fine-tuning
 NUM_EPOCHS=1
 DATA_DIR="./new_training_data"
-OUTPUT_DIR="./checkpoints/ganga-2-1b-embeddings-new-equall"
+OUTPUT_DIR="./checkpoints/ganga-2-1b-embeddings"
 ZERO_STAGE=3
 
 # Enable mixed precision but no LoRA
@@ -40,7 +40,7 @@ deepspeed --include=localhost:0 \
   --num_epochs $NUM_EPOCHS \
   --data_dir $DATA_DIR \
   --output_dir $OUTPUT_DIR \
-  --pooling_type "mean" \
+  --pooling_type "selective" \
   --temperature 0.2 \
   --weight_decay 0.001 \
   --logging_steps 1 \
@@ -51,6 +51,8 @@ deepspeed --include=localhost:0 \
   --local_rank 0 \
   --num_gpus $NUM_GPUS \
   --model_parallel_size 1 \
+  --hinvec_selective \
+  --use_wandb \
   2>&1 | tee logs/training_log_$(date +%Y%m%d_%H%M%S).log
 
 # Log end time

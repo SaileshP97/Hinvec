@@ -14,6 +14,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from transformers import (
     AutoModel,
+    AutoConfig,
     AutoTokenizer,
     TrainingArguments,
     Trainer,
@@ -23,13 +24,15 @@ from transformers.trainer_callback import EarlyStoppingCallback
 from transformers.integrations import HfDeepSpeedConfig
 from safetensors.torch import load_file, save_file
 
+from configuration_hinvec import BidirectionalMistralConfig, HinvecConfig
+
 from peft import LoraConfig, prepare_model_for_kbit_training, get_peft_model
 import wandb
 import deepspeed
 from deepspeed.utils.zero_to_fp32 import convert_zero_checkpoint_to_fp32_state_dict
 
 
-from ganga_modeling import EmbeddingModel
+from ganga_modeling import EmbeddingModel, HinvecEmbedding, BidirectionalMistralModel
 
 random.seed(42)
 torch.manual_seed(42)
@@ -109,6 +112,7 @@ def set_model_and_tokenizer(args):
         
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
     tokenizer.padding_side = 'left'
+    config = AutoConfig.from_pretrained(args.model_name)
     
     # Apply LoRA if enabled
     if args.use_lora:
@@ -135,13 +139,17 @@ def set_model_and_tokenizer(args):
 
     if not args.bi_dir:
         model = EmbeddingModel(base_model, pooling_type=args.pooling_type)
+    if args.hinvec_selective:
+
+        bidir_config = BidirectionalMistralConfig(**config.to_dict())
+        hinvec_config = HinvecConfig(bidir_config)
+        model = HinvecEmbedding(hinvec_config)
+        model.embedding_model.load_state_dict(base_model.state_dict())
+        
+        model = EmbeddingModel(model, pooling_type=args.pooling_type)
     else:
 
-        from transformers import AutoConfig
-        from ganga_modeling import BidirectionalMistralConfig, BidirectionalMistralModel
-
-        original_config = AutoConfig.from_pretrained(args.model_name)
-        bidir_config = BidirectionalMistralConfig(**original_config.to_dict())
+        bidir_config = BidirectionalMistralConfig(**config.to_dict())
         bidir_model = BidirectionalMistralModel(bidir_config)
         bidir_model.load_state_dict(base_model.state_dict())
         bidir_model = bidir_model.to(torch.float16)
@@ -174,12 +182,15 @@ def InfoNCELoss(query_embeddings, key_embeddings, ids, temperature=0.05):
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
         
-        #for mask in inputs.output_attention_mask:
-        #    print(f"{mask}")
         query_embeddings = model(inputs.input_ids, inputs.attention_mask)
         key_embeddings = model(inputs.output_ids, inputs.output_attention_mask).detach()
         
         loss = InfoNCELoss(query_embeddings, key_embeddings, inputs['ids'])
+ 
+        if self.state.global_step/self.state.max_steps < 0.5 and model.base_model.config.model_type == "hinvec":
+            model.base_model.threshold.requires_grad = False
+        else:
+            model.base_model.threshold.requires_grad = True
         
         return (loss, query_embeddings) if return_outputs else loss
     
@@ -277,8 +288,10 @@ def main():
 
     # Model arguments
     parser.add_argument("--model_name", type=str, required=True, help="Model to be fine-tuned")
-    parser.add_argument("--pooling_type", type=str, default="mean", choices=["mean", "cls", "eos"], help="Pooling strategy for embeddings")
+    parser.add_argument("--pooling_type", type=str, default="mean", choices=["mean", "cls", "eos", "mean_with_attn", "selective"], help="Pooling strategy for embeddings")
     parser.add_argument("--bi_dir", action="store_true", help="Use bidirectional Mistral model")
+    parser.add_argument("--hinvec_selective", action="store_true", help="Use Attention at the end.")
+    parser.add_argument("--d_model", type=int, default=10, help="Dimension of Key matrix at final attention.")
     parser.add_argument("--use_devicemap_auto", action="store_true", help="Use devicemap auto for model sharding")
     
     # Training arguments
@@ -316,7 +329,7 @@ def main():
     parser.add_argument("--model_parallel_size", type=int, default=2, help="Number of GPUs to shard each model instance across")
     
     # wandb use_wandb
-    parser.add_argument("--use_wandb", action="store_false", help="Enable wandb")
+    parser.add_argument("--use_wandb", action="store_true", help="Enable wandb")
     
     # Output arguments
     parser.add_argument("--output_dir", type=str, default="./checkpoints", help="Output directory for model checkpoints")
@@ -338,8 +351,8 @@ def main():
     train_dataset = get_jsonl(f"{args.data_dir}/train_data.jsonl")
     val_dataset = get_jsonl(f"{args.data_dir}/val_data.jsonl")
 
-    #train_dataset = train_dataset[:100]
-    #val_dataset = val_dataset[:10]
+    #train_dataset = train_dataset[:10]
+    #val_dataset = val_dataset[:1]
 
     train_dataset = MultiTaskDataset(train_dataset, tokenizer, args.max_length, args.max_length)
     val_dataset = MultiTaskDataset(val_dataset, tokenizer, args.max_length, args.max_length)
@@ -359,7 +372,7 @@ def main():
             if args.use_wandb:
                 wandb.init(
                             project = 'HinVec',
-                            name = f"{args.model_name}-{args.pooling_type}-{args.batch_size}-{args.num_epochs}",
+                            name = f"{args.output_dir.split('/')[-1]}-{args.pooling_type}-{args.batch_size}-{args.num_epochs}",
                             config=vars(args)
                         )
                 wandb.watch(model, log="all", log_freq=1)
@@ -423,7 +436,8 @@ def main():
 
         best_model_dir = trainer.state.best_model_checkpoint
 
-        output_dir = os.path.join(trainer.args.output_dir, "best_model")    
+        output_dir = os.path.join(trainer.args.output_dir, "best_model")
+
         convert_zero_checkpoint_to_fp32_state_dict(best_model_dir, output_dir, safe_serialization=True)
 
         state_dict = load_file(os.path.join(output_dir, "model.safetensors"))
@@ -432,9 +446,14 @@ def main():
             state_dict_new[".".join(key.split(".")[1:])] = state_dict[key]
         save_file(state_dict_new, os.path.join(output_dir, "model.safetensors"))
 
-        config = model.base_model.config.to_dict()
+        if args.hinvec_selective:
+            config = model.base_model.embedding_model.config.to_dict()
+        else:
+            config = model.base_model.config.to_dict()
+            
         with open(os.path.join(output_dir, "config.json"), 'w') as f:
             json.dump(config, f, indent=4)
+        
         logger.info(f"Best model saved to {output_dir}")
 
 if __name__ == "__main__":
