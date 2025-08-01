@@ -12,7 +12,7 @@ def generate_query_for_article(sample):
 
     client = OpenAI(
         base_url="https://integrate.api.nvidia.com/v1",
-        api_key="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"
+        api_key="XXXX"
     )
     
     system_message = """

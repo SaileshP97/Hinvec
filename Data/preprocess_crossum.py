@@ -1,12 +1,11 @@
-import os
+from datasets import load_dataset, load_from_disk
+
 import json
 import random
 import glob
 
 import numpy as np
 import pandas as pd
-
-from datasets import load_dataset, load_from_disk
 
 INSTRUCTION = {
     "bengali":	("নির্দেশাবলী: প্রদত্ত পাঠ্যের জন্য সবচেয়ে প্রাসঙ্গিক সারাংশ খুঁজুন। পাঠ্য:", "নির্দেশাবলী: প্রদত্ত পাঠ্যের জন্য সবচেয়ে প্রাসঙ্গিক নথি খুঁজুন। পাঠ্য:"),

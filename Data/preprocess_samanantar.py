@@ -1,4 +1,3 @@
-import os
 import json
 import random
 import glob
@@ -25,34 +24,11 @@ INSTRUCTION = {
 
 LANGUAGE_CODE = ["as", "bn", "gu", "hi", "kn", "ml", "mr", "or", "pa", "ta", "te"]
 
-def load_jsonl(path):
-
-    data = []
-    with open(path, 'r') as f:
-        for line in f:
-            data.append(json.loads(line)) 
-    return data
-
-def save_jsonl(data, path):
-
-    with open(path, "w", encoding="utf-8") as f:
-        for line in data:
-            json.dump(line, f, ensure_ascii=False)
-            f.write("\n")
-
 def main():
 
-    for lang in LANGUAGE_CODE:
-        print(f"Downloading {lang} data")
+    #for lang in LANGUAGE_CODE:
 
-        ds = load_dataset("ai4bharat/Samanantar", lang)
-        data = [sample for sample in ds["train"]]
-
-        os.makedirs("./Translation/Samanantar", exist_ok=True)
-        random.shuffle(data)
-
-        save_jsonl(data, f"./Translation/Samanantar/{lang}.jsonl")
-        save_jsonl(data, "../Processed_data/samanantar.jsonl")
+    ds = load_dataset("ai4bharat/samanantar", "bn")
 
 if __name__ == "__main__":
     main()
