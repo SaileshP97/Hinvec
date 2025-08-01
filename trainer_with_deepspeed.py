@@ -24,7 +24,7 @@ from transformers.trainer_callback import EarlyStoppingCallback
 from transformers.integrations import HfDeepSpeedConfig
 from safetensors.torch import load_file, save_file
 
-from configuration_hinvec import BidirectionalMistralConfig, HinvecConfig
+from configuration_hinvec import BidirectionalMistralConfig
 
 from peft import LoraConfig, prepare_model_for_kbit_training, get_peft_model
 import wandb
@@ -32,7 +32,7 @@ import deepspeed
 from deepspeed.utils.zero_to_fp32 import convert_zero_checkpoint_to_fp32_state_dict
 
 
-from ganga_modeling import EmbeddingModel, HinvecEmbedding, BidirectionalMistralModel
+from ganga_modeling import EmbeddingModel, BidirectionalMistralModel
 
 random.seed(42)
 torch.manual_seed(42)
@@ -139,14 +139,6 @@ def set_model_and_tokenizer(args):
 
     if not args.bi_dir:
         model = EmbeddingModel(base_model, pooling_type=args.pooling_type)
-    if args.hinvec_selective:
-
-        bidir_config = BidirectionalMistralConfig(**config.to_dict())
-        hinvec_config = HinvecConfig(bidir_config)
-        model = HinvecEmbedding(hinvec_config)
-        model.embedding_model.load_state_dict(base_model.state_dict())
-        
-        model = EmbeddingModel(model, pooling_type=args.pooling_type)
     else:
 
         bidir_config = BidirectionalMistralConfig(**config.to_dict())
