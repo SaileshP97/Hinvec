@@ -4,6 +4,9 @@ import random
 import torch
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
+from loguru import logger
+
+logger.add("./logs/logfile.log", level="INFO", rotation="1 MB", retention="7 days", compression="zip")
 
 class MultiTaskDataset(Dataset):
     """
@@ -34,6 +37,7 @@ class MultiTaskDataset(Dataset):
     
     def __getitem__(self, idx):
         """Return a single tokenized example"""
+
         item = self.data[idx]
         
         input_encoding = self.tokenizer(
@@ -43,7 +47,7 @@ class MultiTaskDataset(Dataset):
             max_length=self.max_source_length,
             return_tensors=None
         )
-        
+
         output_encoding = self.tokenizer(
             item['target'],
             padding=True,
@@ -51,7 +55,7 @@ class MultiTaskDataset(Dataset):
             max_length=self.max_target_length,
             return_tensors=None
         )
-
+        
         input_encoding['ids'] = item['id']
         input_encoding['input_ids'] = torch.tensor(input_encoding['input_ids'])
         input_encoding['attention_mask'] = torch.tensor(input_encoding['attention_mask'])

@@ -2,26 +2,28 @@ import os
 import argparse
 import random
 import json
+import math
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
-from typing import Union, Optional, Tuple
+from typing import Union, Optional, Tuple, Literal
 
+from transformers import AutoConfig
 from transformers.modeling_outputs import BaseModelOutputWithPast
 from transformers.modeling_attn_mask_utils import _prepare_4d_attention_mask, _prepare_4d_attention_mask_for_sdpa
 from transformers.modeling_flash_attention_utils import FlashAttentionKwargs
 from transformers.processing_utils import Unpack
-from transformers import MistralModel, MistralConfig
+from transformers import MistralModel, MistralConfig, AutoModel
 from transformers.cache_utils import Cache, DynamicCache
+from transformers.modeling_utils import PreTrainedModel
+from transformers.configuration_utils import PretrainedConfig
+from transformers.models.auto import CONFIG_MAPPING
+
+from configuration_hinvec import BidirectionalMistralConfig
 
 from loguru import logger
-
-BIDIR_MISTRAL_TYPE = "bidir_mistral"
-
-class BidirectionalMistralConfig(MistralConfig):
-    model_type = BIDIR_MISTRAL_TYPE
-    keys_to_ignore_at_inference = ["past_key_values"]
 
 class BidirectionalMistralModel(MistralModel):
     config_class = BidirectionalMistralConfig
@@ -163,8 +165,7 @@ class BidirectionalMistralModel(MistralModel):
             attentions=all_self_attns,
         )
         return output if return_dict else output.to_tuple()
-    
-    
+
 class EmbeddingModel(nn.Module):
     """
     Wrapper model that outputs embeddings from the base model
@@ -186,12 +187,30 @@ class EmbeddingModel(nn.Module):
             token_embeddings = outputs.last_hidden_state
             input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float().to(token_embeddings.device)
             embeddings = torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+
+        elif self.pooling_type == "selective":
+            token_embeddings = outputs.last_hidden_state
+            outputs.relevant_pos[:,-1] = 1
+            input_mask_expanded = outputs.relevant_pos.unsqueeze(-1).expand(token_embeddings.size()).float().to(token_embeddings.device)
+            embeddings = torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+
+        elif self.pooling_type == "mean_with_attn":
+            token_embeddings = outputs.last_hidden_state
+            embeddings = token_embeddings.mean(dim=1)
+
         elif self.pooling_type == "cls":
             # Use [CLS] token embedding
             embeddings = outputs.last_hidden_state[:, 0]
+
+        elif self.pooling_type == "eos":
+            # Use [EOS] token embedding
+            embeddings = outputs.last_hidden_state[:, -1]
+
         else:
             raise ValueError(f"Unsupported pooling type: {self.pooling_type}")
             
         return embeddings
         
-    
+AutoModel.register(BidirectionalMistralConfig, BidirectionalMistralModel)
+
+BidirectionalMistralConfig.register_for_auto_class("AutoModel")

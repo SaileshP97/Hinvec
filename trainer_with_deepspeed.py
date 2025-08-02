@@ -1,5 +1,5 @@
-import os
 import argparse
+import os
 import random
 import json
 import math
@@ -14,6 +14,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 from transformers import (
     AutoModel,
+    AutoConfig,
     AutoTokenizer,
     TrainingArguments,
     Trainer,
@@ -21,6 +22,9 @@ from transformers import (
 )
 from transformers.trainer_callback import EarlyStoppingCallback
 from transformers.integrations import HfDeepSpeedConfig
+from safetensors.torch import load_file, save_file
+
+from configuration_hinvec import BidirectionalMistralConfig
 
 from peft import LoraConfig, prepare_model_for_kbit_training, get_peft_model
 import wandb
@@ -28,7 +32,7 @@ import deepspeed
 from deepspeed.utils.zero_to_fp32 import convert_zero_checkpoint_to_fp32_state_dict
 
 
-from ganga_modeling import EmbeddingModel
+from ganga_modeling import EmbeddingModel, BidirectionalMistralModel
 
 random.seed(42)
 torch.manual_seed(42)
@@ -92,22 +96,23 @@ def set_model_and_tokenizer(args):
         logger.info(f"Setting up model for pipeline parallelism with {args.model_parallel_size} stages")
         base_model = AutoModel.from_pretrained(args.model_name,
                                             torch_dtype=torch.bfloat16,
-                                            #attn_implementation="flash_attention_2",
+                                            attn_implementation="flash_attention_2",
                                             )
     elif args.use_devicemap_auto:
         base_model = AutoModel.from_pretrained(args.model_name,
                                         torch_dtype=torch.bfloat16,
-                                        #attn_implementation="flash_attention_2",
+                                        attn_implementation="flash_attention_2",
                                         device_map="auto",
                                         )
     else:
         base_model = AutoModel.from_pretrained(args.model_name,
                                             torch_dtype=torch.bfloat16,
-                                            #attn_implementation="flash_attention_2",
+                                            attn_implementation="flash_attention_2",
                                             )
         
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
     tokenizer.padding_side = 'left'
+    config = AutoConfig.from_pretrained(args.model_name)
     
     # Apply LoRA if enabled
     if args.use_lora:
@@ -130,18 +135,18 @@ def set_model_and_tokenizer(args):
         base_model.enable_input_require_grads()
     
     # Create embedding model wrapper
-    base_model.config.use_cache = False
-    #model = EmbeddingModel(base_model, pooling_type=args.pooling_type)
-    from transformers import AutoConfig
-    from ganga_modeling import BidirectionalMistralConfig, BidirectionalMistralModel
+    base_model.config.use_cache = True
 
-    original_config = AutoConfig.from_pretrained(args.model_name)
-    bidir_config = BidirectionalMistralConfig(**original_config.to_dict())
-    bidir_model = BidirectionalMistralModel(bidir_config)
-    bidir_model.load_state_dict(base_model.state_dict())
-    bidir_model = bidir_model.to(torch.float16)
+    if not args.bi_dir:
+        model = EmbeddingModel(base_model, pooling_type=args.pooling_type)
+    else:
 
-    model = EmbeddingModel(bidir_model, pooling_type=args.pooling_type)
+        bidir_config = BidirectionalMistralConfig(**config.to_dict())
+        bidir_model = BidirectionalMistralModel(bidir_config)
+        bidir_model.load_state_dict(base_model.state_dict())
+        bidir_model = bidir_model.to(torch.float16)
+
+        model = EmbeddingModel(bidir_model, pooling_type=args.pooling_type)
     
     return model, tokenizer
 
@@ -168,16 +173,20 @@ def InfoNCELoss(query_embeddings, key_embeddings, ids, temperature=0.05):
 
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
-
+        
         query_embeddings = model(inputs.input_ids, inputs.attention_mask)
         key_embeddings = model(inputs.output_ids, inputs.output_attention_mask).detach()
         
         loss = InfoNCELoss(query_embeddings, key_embeddings, inputs['ids'])
+ 
+        if self.state.global_step/self.state.max_steps < 0.5 and model.base_model.config.model_type == "hinvec":
+            model.base_model.threshold.requires_grad = False
+        else:
+            model.base_model.threshold.requires_grad = True
         
         return (loss, query_embeddings) if return_outputs else loss
     
     def prediction_step(self, model, inputs, prediction_loss_only, ignore_keys=None):
-        
 
         model.eval()
         with torch.no_grad():
@@ -271,7 +280,10 @@ def main():
 
     # Model arguments
     parser.add_argument("--model_name", type=str, required=True, help="Model to be fine-tuned")
-    parser.add_argument("--pooling_type", type=str, default="mean", choices=["mean", "cls"], help="Pooling strategy for embeddings")
+    parser.add_argument("--pooling_type", type=str, default="mean", choices=["mean", "cls", "eos", "mean_with_attn", "selective"], help="Pooling strategy for embeddings")
+    parser.add_argument("--bi_dir", action="store_true", help="Use bidirectional Mistral model")
+    parser.add_argument("--hinvec_selective", action="store_true", help="Use Attention at the end.")
+    parser.add_argument("--d_model", type=int, default=10, help="Dimension of Key matrix at final attention.")
     parser.add_argument("--use_devicemap_auto", action="store_true", help="Use devicemap auto for model sharding")
     
     # Training arguments
@@ -284,7 +296,7 @@ def main():
     parser.add_argument("--logging_steps", type=int, default=1, help="Log every X steps")
     parser.add_argument("--save_steps", type=int, default=500, help="Save checkpoint every X steps")
     parser.add_argument("--steps_per_epoch", type=int, default=None, help="Steps per epoch for scheduler (calculated if None)")
-    parser.add_argument("--eval_steps", type=int, default=500, help="Steps after which evaluation is done.")
+    parser.add_argument("--eval_steps", type=int, default=4000, help="Steps after which evaluation is done.")
     
     # Data arguments
     parser.add_argument("--data_dir", type=str, default="./new_training_data", help="Directory with JSONL files")
@@ -309,7 +321,7 @@ def main():
     parser.add_argument("--model_parallel_size", type=int, default=2, help="Number of GPUs to shard each model instance across")
     
     # wandb use_wandb
-    parser.add_argument("--use_wandb", action="store_false", help="Enable wandb")
+    parser.add_argument("--use_wandb", action="store_true", help="Enable wandb")
     
     # Output arguments
     parser.add_argument("--output_dir", type=str, default="./checkpoints", help="Output directory for model checkpoints")
@@ -331,6 +343,9 @@ def main():
     train_dataset = get_jsonl(f"{args.data_dir}/train_data.jsonl")
     val_dataset = get_jsonl(f"{args.data_dir}/val_data.jsonl")
 
+    #train_dataset = train_dataset[:10]
+    #val_dataset = val_dataset[:1]
+
     train_dataset = MultiTaskDataset(train_dataset, tokenizer, args.max_length, args.max_length)
     val_dataset = MultiTaskDataset(val_dataset, tokenizer, args.max_length, args.max_length)
 
@@ -349,7 +364,7 @@ def main():
             if args.use_wandb:
                 wandb.init(
                             project = 'HinVec',
-                            name = f"{args.model_name}-{args.pooling_type}-{args.batch_size}-{args.num_epochs}",
+                            name = f"{args.output_dir.split('/')[-1]}-{args.pooling_type}-{args.batch_size}-{args.num_epochs}",
                             config=vars(args)
                         )
                 wandb.watch(model, log="all", log_freq=1)
@@ -389,6 +404,7 @@ def main():
         report_to="wandb",
         deepspeed=args.deepspeed_config,
         local_rank=args.local_rank,
+        resume_from_checkpoint=False
     )
 
     # Create trainer
@@ -404,11 +420,6 @@ def main():
         callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
     )
 
-    if torch.distributed.get_rank() in [-1, 0]:
-
-        for name, module in model.named_modules():
-            if hasattr(module, 'weight') and module.weight is not None:
-                print(f"{name}: {module.weight.device}")
     # Start training
     trainer.train()
     
@@ -417,26 +428,25 @@ def main():
 
         best_model_dir = trainer.state.best_model_checkpoint
 
-        output_dir = os.path.join(trainer.args.output_dir, "best_model")    
+        output_dir = os.path.join(trainer.args.output_dir, "best_model")
 
-        convert_zero_checkpoint_to_fp32_state_dict(best_model_dir, output_dir)
+        convert_zero_checkpoint_to_fp32_state_dict(best_model_dir, output_dir, safe_serialization=True)
 
-        #state_dict = torch.load(f"{output_dir}/pytorch_model.bin")
+        state_dict = load_file(os.path.join(output_dir, "model.safetensors"))
+        state_dict_new = {}
+        for key in state_dict:
+            state_dict_new[".".join(key.split(".")[1:])] = state_dict[key]
+        save_file(state_dict_new, os.path.join(output_dir, "model.safetensors"))
 
-        #if torch.distributed.get_rank() in [-1, 0]:
-        #    base_model2 = AutoModel.from_pretrained(args.model_name)
-        #    model2 = EmbeddingModel(base_model2, args.pooling_type)
-        #    model2.load_state_dict(state_dict)
-        #    model2.base_model.save_pretrained(output_dir)
-    
-    #checkpoint_dir = os.path.join(trainer.args.output_dir, "checkpoint-5522")
-    #model.load_state_dict(state_dict)
-    #trainer.deepspeed.save_checkpoint(checkpoint_dir)
-    #fp32_model = load_state_dict_from_zero_checkpoint(trainer.model.base_model, checkpoint_dir)
-    #fp32_model.save_pretrained(os.path.join(output_dir, "best-model2"))
-
-    #    model.base_model.save_checkpoint(os.path.join(output_dir, "best-model"))
-
+        if args.hinvec_selective:
+            config = model.base_model.embedding_model.config.to_dict()
+        else:
+            config = model.base_model.config.to_dict()
+            
+        with open(os.path.join(output_dir, "config.json"), 'w') as f:
+            json.dump(config, f, indent=4)
+        
+        logger.info(f"Best model saved to {output_dir}")
 
 if __name__ == "__main__":
     main()

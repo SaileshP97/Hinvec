@@ -1,7 +1,7 @@
 import torch
 import argparse
 
-from transformers import AutoModel, AutoTokenizer
+from transformers import AutoModel, AutoTokenizer, AutoConfig
 import mteb
 from mteb.encoder_interface import PromptType
 import numpy as np
@@ -9,7 +9,9 @@ from sentence_transformers import SentenceTransformer
 import huggingface_hub
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "2,3,4,5,6,7"
+from ganga_modeling import EmbeddingModel, BidirectionalMistralModel, BidirectionalMistralConfig
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 class CustomModel:
 
@@ -128,8 +130,11 @@ class CustomModel:
             if self.pooling_type == "mean":
 
                 token_embeddings = outputs.last_hidden_state
-                attention_mask = inputs['attention_mask']
-                
+                if self.model.config.model_type == "x":
+                    attention_mask = torch.ones(100).to(inputs['attention_mask'].device)
+                else:
+                    attention_mask = inputs['attention_mask']
+
                 input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
                 
                 sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
@@ -138,6 +143,10 @@ class CustomModel:
 
             elif self.pooling_type == "cls":
                 batch_embeddings = outputs.last_hidden_state[:, 0]
+
+            elif self.pooling_type == "eos":
+                batch_embeddings = outputs.last_hidden_state[:, -1]
+
             else:
                 raise ValueError(f"Unsupported pooling type: {self.pooling_type}")
             
@@ -153,14 +162,26 @@ def main():
     parser = argparse.ArgumentParser(description="Testing Embedding model on MTEB benchmark.")
 
     parser.add_argument("--model_name", type=str, required=True, help="Model to be evaluated.")
+    parser.add_argument("--pooling_type", type=str, required=True, default="mean", help="Pooling Type.")
+    parser.add_argument("--bi_dir", action="store_true", help="Whether to use bidirectional model or not.")
 
     args = parser.parse_args()
 
+    if args.bi_dir:
+        state_dict = torch.load(f"{args.model_name}/pytorch_model.bin")
 
-    base_model = AutoModel.from_pretrained(args.model_name)
+        base_model = AutoModel.from_pretrained("LingoIITGN/Ganga-2-1B")
+        original_config = AutoConfig.from_pretrained("LingoIITGN/Ganga-2-1B")
+        bidir_config = BidirectionalMistralConfig(**original_config.to_dict())
+        base_model = BidirectionalMistralModel(bidir_config)
+        base_model.load_state_dict(state_dict)
+
+    else:
+        base_model = AutoModel.from_pretrained(args.model_name)
+
     tokenizer = AutoTokenizer.from_pretrained("LingoIITGN/Ganga-2-1B")
 
-    model = CustomModel(base_model, tokenizer, 'mean')
+    model = CustomModel(base_model, tokenizer, pooling_type=args.pooling_type)
 
     tasks = mteb.get_tasks(tasks=["IN22ConvBitextMining",
     "IN22GenBitextMining",
@@ -181,9 +202,9 @@ def main():
 
     #tasks = mteb.get_tasks(tasks=["MIRACLRetrieval"], languages=['hin'])
     
-    model_name = args.model_name.split('/')[2]
+    model_name = args.model_name.split('/')[1]
     evaluation = mteb.MTEB(tasks=tasks)
-    evaluation.run(model, encode_kwargs={"batch_size": 128}, output_folder=f"results/{model_name}")
+    evaluation.run(model, encode_kwargs={"batch_size": 3000}, output_folder=f"results/{model_name}")
 
 if __name__ == "__main__":
     main()

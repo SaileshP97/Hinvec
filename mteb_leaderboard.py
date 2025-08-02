@@ -65,14 +65,15 @@ def main():
               'Cohere__Cohere-embed-multilingual-v3.0', 'OrdalieTech__Solon-embeddings-large-0.1',
               'Alibaba-NLP__gte-Qwen2-1.5B-instruct', 'Lajavaness__bilingual-embedding-large',
               'Salesforce__SFR-Embedding-2_R', 'intfloat__multilingual-e5-large-instruct', 
-              'Ganga_mean', 'Ganga_org', 'Ganga_all_data', 'Ganga_1024', 'ganga-2-1b-embeddings-full-mean-16',
-              'ganga-2-1b-embeddings-full-mean-32', 'ganga-2-1b-embeddings-new-equal-mean-32',
-              'ganga-2-1b-embeddings-new-full-mean-32', 'ganga-2-1b-embeddings-new-full-mean-32-epoch-3',
-              'ganga-2-1b-embeddings-new-equall-finetune-mean-32-epoch-1',
-              'ganga-2-1b-embeddings-new-equall-finetune-2-mean-32-epoch-1',
-              'ganga-2-1b-embeddings-new-equall-finetune-3-mean-32-epoch-1',
-              'ganga-2-1b-embeddings-new-equall-finetune-final-2-mean-32-epoch-1',
-              'ganga-2-1b-embeddings-new-equall-finetune-final-mean-32-epoch-1']
+              'Ganga_org',
+              'ganga-2-1b-embeddings-new-equal-mean-32',
+              'ganga-2-1b-embeddings-new-equall-mean-42-epoch-1',
+              'ganga-2-1b-embeddings-new-equall-eos-42-epoch-1',
+              'ganga-2-1b-embeddings-new-equall-bidir-mean-42-epoch-1',
+              'ganga-2-1b-embeddings-new-equall-bidir-eos-42-epoch-1',
+              'ganga-2-1b-embeddings-attn-mean_with_attn-42-epoch-2',
+              'ganga-2-1b-embeddings-selective-42-epoch-1',
+              'Sailesh97__Hinvec']
     
     tasks = ["BelebeleRetrieval", "XQuADRetrieval", "IndicCrosslingualSTS",
              "WikipediaRerankingMultilingual", "XNLI", "SIB200ClusteringS2S",
@@ -84,6 +85,8 @@ def main():
     model_report = {}
     
     for model in models:
+
+        print(model)
 
         task_report = {}
         for task in tasks:
@@ -114,7 +117,17 @@ def main():
 
             elif model.split('-')[0] == 'ganga':
                 taskss = f"results/{model}/no_model_name_available/no_revision_available/{task}.json"
-                print(model)
+
+                with open(taskss, 'r') as f:
+                    report = json.load(f)
+            
+            elif model in ["Hinvec", "Hinvec2"]:
+                taskss = f"results/{model}/no_model_name_available/no_revision_available/{task}.json"
+
+                with open(taskss, 'r') as f:
+                    report = json.load(f)
+            elif model == "Sailesh97__Hinvec":
+                taskss = f"results/{model}/d4fc678720cc1b8c5d18599ce2d9a4d6090c8b6b/{task}.json"
 
                 with open(taskss, 'r') as f:
                     report = json.load(f)
@@ -157,7 +170,7 @@ def main():
                               "hin_Deva-hin_Latn", "hin_Latn-hin_Deva"]
                 
                 for hf in model_report[model][task]['scores']['test']:
-                    if hf['hf_subset'] in hf_subsets:
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         main_score.append(hf['main_score'])
                         
                 leader_board_task[task] = np.mean(main_score)
@@ -165,32 +178,32 @@ def main():
             if task == "XQuADRetrieval":
 
                 for hf in model_report[model][task]['scores']['validation']:
-                    if hf['hf_subset'] == "hi":
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         leader_board_task[task] = hf['main_score']
                         break
             
             if task == "IndicCrosslingualSTS":
 
                 for hf in model_report[model][task]['scores']['test']:
-                    if hf['hf_subset'] == "en-hi":
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         leader_board_task[task] = hf['main_score']
                         break
 
             if task == "WikipediaRerankingMultilingual":
 
                 for hf in model_report[model][task]['scores']['test']:
-                    if hf['hf_subset'] == "hi":
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         leader_board_task[task] = hf['main_score']
                         break
 
             if task == "XNLI":
                 main_score = []
                 for hf in model_report[model][task]['scores']['test']:
-                    if hf['hf_subset'] == "hi":
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         main_score.append(hf['main_score'])
                         break
                 for hf in model_report[model][task]['scores']['validation']:
-                    if hf['hf_subset'] == "hi":
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         main_score.append(hf['main_score'])
                         break
                 leader_board_task[task] = np.mean(main_score)
@@ -198,21 +211,21 @@ def main():
             if task == "SIB200ClusteringS2S":
 
                 for hf in model_report[model][task]['scores']['test']:
-                    if hf['hf_subset'] == "hin_Deva":
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         leader_board_task[task] = hf['main_score']
                         break
             
             if task == "TweetSentimentClassification":
 
                 for hf in model_report[model][task]['scores']['test']:
-                    if hf['hf_subset'] == "hindi":
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         leader_board_task[task] = hf['main_score']
                         break
 
             if task == "MultiHateClassification":
 
                 for hf in model_report[model][task]['scores']['test']:
-                    if hf['hf_subset'] == "hin":
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         leader_board_task[task] = hf['main_score']
                         break
 
@@ -220,18 +233,18 @@ def main():
                 main_score = []
                 try:
                     for hf in model_report[model][task]['scores']['validation']:
-                        if hf['hf_subset'] == "hi":
+                        if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                             main_score.append(hf['main_score'])
                             
                     for hf in model_report[model][task]['scores']['test']:
-                            if hf['hf_subset'] == "hi":
+                            if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                                 main_score.append(hf['main_score'])
                                 
                     leader_board_task[task] = np.mean(main_score)
                 except KeyError:
                     try:
                         for hf in model_report[model][task]['scores']['test']:
-                            if hf['hf_subset'] == "hi":
+                            if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                                 leader_board_task[task] = hf['main_score']
                                 break
                     except KeyError:
@@ -264,12 +277,12 @@ def main():
             if task == "IndicGenBenchFloresBitextMining":
                 main_score = []
                 for hf in model_report[model][task]['scores']['test']:
-                    if hf['hf_subset'] in ['hin-eng', 'eng-hin']:
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         main_score.append(hf['main_score'])
                     break
 
                 for hf in model_report[model][task]['scores']['validation']:
-                    if hf['hf_subset'] in ['hin-eng', 'eng-hin']:
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         main_score.append(hf['main_score'])
                 leader_board_task[task] = np.mean(main_score)
 
@@ -277,14 +290,14 @@ def main():
             if task == "IN22GenBitextMining":
                 main_score = []
                 for hf in model_report[model][task]['scores']['test']:
-                    if hf['hf_subset'] in ['eng_Latn-hin_Deva', 'hin_Deva-eng_Latn']:
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         main_score.append(hf['main_score'])
                 leader_board_task[task] = np.mean(main_score)
 
             if task == "IN22ConvBitextMining":
                 main_score = []
                 for hf in model_report[model][task]['scores']['test']:
-                    if hf['hf_subset'] in ['eng_Latn-hin_Deva', 'hin_Deva-eng_Latn']:
+                    if any(lang in hf['languages'] for lang in ('hin-Deva', 'hin-Latn', 'hindi', 'hi')):
                         main_score.append(hf['main_score'])
                 leader_board_task[task] = np.mean(main_score)
             
