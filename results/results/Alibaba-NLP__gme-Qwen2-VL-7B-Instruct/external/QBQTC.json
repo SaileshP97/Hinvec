@@ -1,0 +1,25 @@
+{
+    "dataset_revision": "790b0510dc52b1553e8c49f3d2afb48c0e5c48b7",
+    "task_name": "QBQTC",
+    "evaluation_time": null,
+    "mteb_version": null,
+    "scores": {
+        "test": [
+            {
+                "hf_subset": "default",
+                "languages": [
+                    "cmn-Hans"
+                ],
+                "cos_sim_pearson": 0.31928376136347014,
+                "cos_sim_spearman": 0.34384972045331624,
+                "euclidean_pearson": 0.32658432953090677,
+                "euclidean_spearman": 0.34384972045331624,
+                "manhattan_pearson": 0.32887190283203055,
+                "manhattan_spearman": 0.34694969608493265,
+                "cosine_pearson": 0.31928376136347014,
+                "cosine_spearman": 0.34384972045331624,
+                "main_score": 0.34384972045331624
+            }
+        ]
+    }
+}

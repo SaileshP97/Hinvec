@@ -1,0 +1,27 @@
+{
+  "dataset_revision": "0ca7b87dda68ef4ebb2f50a20a62b9dbebcac3e4",
+  "task_name": "IndicCrosslingualSTS",
+  "mteb_version": "1.38.8",
+  "scores": {
+    "test": [
+      {
+        "pearson": 0.270723,
+        "spearman": 0.188366,
+        "cosine_pearson": 0.270723,
+        "cosine_spearman": 0.188366,
+        "manhattan_pearson": 0.26143,
+        "manhattan_spearman": 0.183177,
+        "euclidean_pearson": 0.264448,
+        "euclidean_spearman": 0.188366,
+        "main_score": 0.188366,
+        "hf_subset": "en-hi",
+        "languages": [
+          "eng-Latn",
+          "hin-Deva"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 2.9882431030273438,
+  "kg_co2_emissions": null
+}

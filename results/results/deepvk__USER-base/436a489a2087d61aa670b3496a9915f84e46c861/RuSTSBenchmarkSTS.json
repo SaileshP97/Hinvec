@@ -1,0 +1,26 @@
+{
+  "dataset_revision": "7cf24f325c6da6195df55bef3d86b5e0616f3018",
+  "evaluation_time": 1.742811918258667,
+  "kg_co2_emissions": null,
+  "mteb_version": "1.12.85",
+  "scores": {
+    "test": [
+      {
+        "cosine_pearson": 0.8243011714527109,
+        "cosine_spearman": 0.8190961090247312,
+        "euclidean_pearson": 0.8011375272866301,
+        "euclidean_spearman": 0.8191048894772341,
+        "hf_subset": "default",
+        "languages": [
+          "rus-Cyrl"
+        ],
+        "main_score": 0.8190961090247312,
+        "manhattan_pearson": 0.8007316200028387,
+        "manhattan_spearman": 0.8179452258948954,
+        "pearson": 0.8243011714527109,
+        "spearman": 0.8190961090247312
+      }
+    ]
+  },
+  "task_name": "RuSTSBenchmarkSTS"
+}

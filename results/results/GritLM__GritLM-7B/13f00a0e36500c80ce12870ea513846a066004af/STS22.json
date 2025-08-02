@@ -1,0 +1,41 @@
+{
+  "dataset_revision": "d31f33a128469b20e357535c39b82fb3c3f6f2bd",
+  "evaluation_time": 21.497711420059204,
+  "kg_co2_emissions": null,
+  "mteb_version": "1.19.4",
+  "scores": {
+    "test": [
+      {
+        "cosine_pearson": 0.6602737493784214,
+        "cosine_spearman": 0.6844681472215942,
+        "euclidean_pearson": 0.6486636598033109,
+        "euclidean_spearman": 0.6844681472215942,
+        "hf_subset": "ru",
+        "languages": [
+          "rus-Cyrl"
+        ],
+        "main_score": 0.6844681472215942,
+        "manhattan_pearson": 0.6475205677155285,
+        "manhattan_spearman": 0.6850400086703208,
+        "pearson": 0.6602737493784214,
+        "spearman": 0.6844681472215942
+      },
+      {
+        "hf_subset": "en",
+        "languages": [
+            "eng-Latn"
+        ],
+        "cos_sim_pearson": 0.6987136205329556,
+        "cos_sim_spearman": 0.6862531546350781,
+        "euclidean_pearson": 0.6891536015034222,
+        "euclidean_spearman": 0.6763744649352542,
+        "manhattan_pearson": 0.692000713045275,
+        "manhattan_spearman": 0.6816002901587317,
+        "cosine_pearson": 0.6987136205329556,
+        "cosine_spearman": 0.6862531546350781,
+        "main_score": 0.6862531546350781
+     }
+    ]
+  },
+  "task_name": "STS22"
+}

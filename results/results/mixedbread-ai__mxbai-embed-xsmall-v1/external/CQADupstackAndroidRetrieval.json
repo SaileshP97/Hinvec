@@ -1,0 +1,44 @@
+{
+    "dataset_revision": "None",
+    "task_name": "CQADupstackAndroidRetrieval",
+    "evaluation_time": null,
+    "mteb_version": null,
+    "scores": {
+        "test": [
+            {
+                "hf_subset": "default",
+                "languages": [
+                    "eng-Latn"
+                ],
+                "ndcg_at_1": 0.4435,
+                "ndcg_at_3": 0.4964,
+                "ndcg_at_5": 0.5173,
+                "ndcg_at_10": 0.5482,
+                "ndcg_at_30": 0.5764,
+                "ndcg_at_100": 0.5977,
+                "map_at_1": 0.3626,
+                "map_at_3": 0.4435,
+                "map_at_5": 0.46259999999999996,
+                "map_at_10": 0.4824,
+                "map_at_30": 0.49340000000000006,
+                "map_at_100": 0.4975,
+                "recall_at_1": 0.3626,
+                "recall_at_3": 0.5146000000000001,
+                "recall_at_5": 0.5778,
+                "recall_at_10": 0.665,
+                "recall_at_30": 0.7719,
+                "recall_at_100": 0.8753,
+                "precision_at_1": 0.4435,
+                "precision_at_3": 0.2365,
+                "precision_at_5": 0.16879999999999998,
+                "precision_at_10": 0.107,
+                "precision_at_30": 0.0453,
+                "precision_at_100": 0.0165,
+                "accuracy_at_3": 0.6051,
+                "accuracy_at_5": 0.6767,
+                "accuracy_at_10": 0.7468,
+                "main_score": 0.5482
+            }
+        ]
+    }
+}

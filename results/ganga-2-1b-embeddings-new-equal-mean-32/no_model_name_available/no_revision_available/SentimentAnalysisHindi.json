@@ -1,0 +1,73 @@
+{
+  "dataset_revision": "1beac1b941da76a9c51e3e5b39d230fde9a80983",
+  "task_name": "SentimentAnalysisHindi",
+  "mteb_version": "1.36.26",
+  "scores": {
+    "train": [
+      {
+        "accuracy": 0.556689,
+        "f1": 0.536746,
+        "f1_weighted": 0.565704,
+        "scores_per_experiment": [
+          {
+            "accuracy": 0.580078,
+            "f1": 0.55585,
+            "f1_weighted": 0.587997
+          },
+          {
+            "accuracy": 0.592285,
+            "f1": 0.571818,
+            "f1_weighted": 0.608629
+          },
+          {
+            "accuracy": 0.559082,
+            "f1": 0.534368,
+            "f1_weighted": 0.565848
+          },
+          {
+            "accuracy": 0.507324,
+            "f1": 0.487357,
+            "f1_weighted": 0.51362
+          },
+          {
+            "accuracy": 0.569336,
+            "f1": 0.558644,
+            "f1_weighted": 0.564242
+          },
+          {
+            "accuracy": 0.537109,
+            "f1": 0.520716,
+            "f1_weighted": 0.54509
+          },
+          {
+            "accuracy": 0.518066,
+            "f1": 0.50523,
+            "f1_weighted": 0.535682
+          },
+          {
+            "accuracy": 0.532715,
+            "f1": 0.506888,
+            "f1_weighted": 0.547956
+          },
+          {
+            "accuracy": 0.561035,
+            "f1": 0.542808,
+            "f1_weighted": 0.572018
+          },
+          {
+            "accuracy": 0.609863,
+            "f1": 0.583781,
+            "f1_weighted": 0.615962
+          }
+        ],
+        "main_score": 0.536746,
+        "hf_subset": "default",
+        "languages": [
+          "hin-Deva"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 12.948585510253906,
+  "kg_co2_emissions": null
+}

@@ -1,0 +1,61 @@
+{
+  "dataset_revision": "f8650438298df086750ff4973661bb58a201a5ee",
+  "task_name": "IndicGenBenchFloresBitextMining",
+  "mteb_version": "1.36.26",
+  "scores": {
+    "validation": [
+      {
+        "precision": 0.941993,
+        "recall": 0.95988,
+        "f1": 0.947676,
+        "accuracy": 0.95988,
+        "main_score": 0.947676,
+        "hf_subset": "hin-eng",
+        "languages": [
+          "hin-Deva",
+          "eng-Latn"
+        ]
+      },
+      {
+        "precision": 0.950267,
+        "recall": 0.965898,
+        "f1": 0.955266,
+        "accuracy": 0.965898,
+        "main_score": 0.955266,
+        "hf_subset": "eng-hin",
+        "languages": [
+          "eng-Latn",
+          "hin-Deva"
+        ]
+      }
+    ],
+    "test": [
+      {
+        "precision": 0.923254,
+        "recall": 0.947628,
+        "f1": 0.931159,
+        "accuracy": 0.947628,
+        "main_score": 0.931159,
+        "hf_subset": "hin-eng",
+        "languages": [
+          "hin-Deva",
+          "eng-Latn"
+        ]
+      },
+      {
+        "precision": 0.948452,
+        "recall": 0.965415,
+        "f1": 0.954051,
+        "accuracy": 0.965415,
+        "main_score": 0.954051,
+        "hf_subset": "eng-hin",
+        "languages": [
+          "eng-Latn",
+          "hin-Deva"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 25.83358144760132,
+  "kg_co2_emissions": null
+}

@@ -1,0 +1,26 @@
+{
+  "dataset_revision": "43265056790b8f7c59e0139acb4be0a8dad2c8f4",
+  "task_name": "RUParaPhraserSTS",
+  "mteb_version": "1.38.0",
+  "scores": {
+    "test": [
+      {
+        "pearson": 0.651729,
+        "spearman": 0.721487,
+        "cosine_pearson": 0.651729,
+        "cosine_spearman": 0.721487,
+        "manhattan_pearson": 0.693093,
+        "manhattan_spearman": 0.720493,
+        "euclidean_pearson": 0.693903,
+        "euclidean_spearman": 0.721488,
+        "main_score": 0.721487,
+        "hf_subset": "default",
+        "languages": [
+          "rus-Cyrl"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 4.93528151512146,
+  "kg_co2_emissions": null
+}

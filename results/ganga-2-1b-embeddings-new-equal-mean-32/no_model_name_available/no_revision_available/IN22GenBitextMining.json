@@ -1,0 +1,539 @@
+{
+  "dataset_revision": "ec381535fe3ddf699297a023bcecaa548096ed68",
+  "task_name": "IN22GenBitextMining",
+  "mteb_version": "1.36.26",
+  "scores": {
+    "test": [
+      {
+        "precision": 0.000197,
+        "recall": 0.001953,
+        "f1": 0.000328,
+        "accuracy": 0.001953,
+        "main_score": 0.000328,
+        "hf_subset": "asm_Beng-hin_Deva",
+        "languages": [
+          "asm-Beng",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.000206,
+        "recall": 0.00293,
+        "f1": 0.000347,
+        "accuracy": 0.00293,
+        "main_score": 0.000347,
+        "hf_subset": "ben_Beng-hin_Deva",
+        "languages": [
+          "ben-Beng",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.07121,
+        "recall": 0.083984,
+        "f1": 0.073104,
+        "accuracy": 0.083984,
+        "main_score": 0.073104,
+        "hf_subset": "brx_Deva-hin_Deva",
+        "languages": [
+          "brx-Deva",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.720319,
+        "recall": 0.758789,
+        "f1": 0.729648,
+        "accuracy": 0.758789,
+        "main_score": 0.729648,
+        "hf_subset": "doi_Deva-hin_Deva",
+        "languages": [
+          "doi-Deva",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.967773,
+        "recall": 0.978516,
+        "f1": 0.971354,
+        "accuracy": 0.978516,
+        "main_score": 0.971354,
+        "hf_subset": "eng_Latn-hin_Deva",
+        "languages": [
+          "eng-Latn",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.260678,
+        "recall": 0.291016,
+        "f1": 0.266204,
+        "accuracy": 0.291016,
+        "main_score": 0.266204,
+        "hf_subset": "gom_Deva-hin_Deva",
+        "languages": [
+          "gom-Deva",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.001085,
+        "recall": 0.001953,
+        "f1": 0.001172,
+        "accuracy": 0.001953,
+        "main_score": 0.001172,
+        "hf_subset": "guj_Gujr-hin_Deva",
+        "languages": [
+          "guj-Gujr",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.001054,
+        "recall": 0.00293,
+        "f1": 0.001121,
+        "accuracy": 0.00293,
+        "main_score": 0.001121,
+        "hf_subset": "hin_Deva-asm_Beng",
+        "languages": [
+          "hin-Deva",
+          "asm-Beng"
+        ]
+      },
+      {
+        "precision": 6e-06,
+        "recall": 0.000977,
+        "f1": 1.1e-05,
+        "accuracy": 0.000977,
+        "main_score": 1.1e-05,
+        "hf_subset": "hin_Deva-ben_Beng",
+        "languages": [
+          "hin-Deva",
+          "ben-Beng"
+        ]
+      },
+      {
+        "precision": 0.10627,
+        "recall": 0.186523,
+        "f1": 0.121183,
+        "accuracy": 0.186523,
+        "main_score": 0.121183,
+        "hf_subset": "hin_Deva-brx_Deva",
+        "languages": [
+          "hin-Deva",
+          "brx-Deva"
+        ]
+      },
+      {
+        "precision": 0.729574,
+        "recall": 0.803711,
+        "f1": 0.751725,
+        "accuracy": 0.803711,
+        "main_score": 0.751725,
+        "hf_subset": "hin_Deva-doi_Deva",
+        "languages": [
+          "hin-Deva",
+          "doi-Deva"
+        ]
+      },
+      {
+        "precision": 0.93693,
+        "recall": 0.957031,
+        "f1": 0.943424,
+        "accuracy": 0.957031,
+        "main_score": 0.943424,
+        "hf_subset": "hin_Deva-eng_Latn",
+        "languages": [
+          "hin-Deva",
+          "eng-Latn"
+        ]
+      },
+      {
+        "precision": 0.305476,
+        "recall": 0.419922,
+        "f1": 0.332011,
+        "accuracy": 0.419922,
+        "main_score": 0.332011,
+        "hf_subset": "hin_Deva-gom_Deva",
+        "languages": [
+          "hin-Deva",
+          "gom-Deva"
+        ]
+      },
+      {
+        "precision": 6e-05,
+        "recall": 0.003906,
+        "f1": 0.000117,
+        "accuracy": 0.003906,
+        "main_score": 0.000117,
+        "hf_subset": "hin_Deva-guj_Gujr",
+        "languages": [
+          "hin-Deva",
+          "guj-Gujr"
+        ]
+      },
+      {
+        "precision": 0.001107,
+        "recall": 0.003906,
+        "f1": 0.00121,
+        "accuracy": 0.003906,
+        "main_score": 0.00121,
+        "hf_subset": "hin_Deva-kan_Knda",
+        "languages": [
+          "hin-Deva",
+          "kan-Knda"
+        ]
+      },
+      {
+        "precision": 0.003415,
+        "recall": 0.009766,
+        "f1": 0.003761,
+        "accuracy": 0.009766,
+        "main_score": 0.003761,
+        "hf_subset": "hin_Deva-kas_Arab",
+        "languages": [
+          "hin-Deva",
+          "kas-Arab"
+        ]
+      },
+      {
+        "precision": 0.820915,
+        "recall": 0.871094,
+        "f1": 0.836021,
+        "accuracy": 0.871094,
+        "main_score": 0.836021,
+        "hf_subset": "hin_Deva-mai_Deva",
+        "languages": [
+          "hin-Deva",
+          "mai-Deva"
+        ]
+      },
+      {
+        "precision": 0.000772,
+        "recall": 0.008789,
+        "f1": 0.001263,
+        "accuracy": 0.008789,
+        "main_score": 0.001263,
+        "hf_subset": "hin_Deva-mal_Mlym",
+        "languages": [
+          "hin-Deva",
+          "mal-Mlym"
+        ]
+      },
+      {
+        "precision": 0.389535,
+        "recall": 0.509766,
+        "f1": 0.419642,
+        "accuracy": 0.509766,
+        "main_score": 0.419642,
+        "hf_subset": "hin_Deva-mar_Deva",
+        "languages": [
+          "hin-Deva",
+          "mar-Deva"
+        ]
+      },
+      {
+        "precision": 0.000978,
+        "recall": 0.001953,
+        "f1": 0.00098,
+        "accuracy": 0.001953,
+        "main_score": 0.00098,
+        "hf_subset": "hin_Deva-mni_Mtei",
+        "languages": [
+          "hin-Deva",
+          "mni-Mtei"
+        ]
+      },
+      {
+        "precision": 0.632839,
+        "recall": 0.71875,
+        "f1": 0.656411,
+        "accuracy": 0.71875,
+        "main_score": 0.656411,
+        "hf_subset": "hin_Deva-npi_Deva",
+        "languages": [
+          "hin-Deva",
+          "npi-Deva"
+        ]
+      },
+      {
+        "precision": 0.000119,
+        "recall": 0.00293,
+        "f1": 0.000216,
+        "accuracy": 0.00293,
+        "main_score": 0.000216,
+        "hf_subset": "hin_Deva-ory_Orya",
+        "languages": [
+          "hin-Deva",
+          "ory-Orya"
+        ]
+      },
+      {
+        "precision": 0.002415,
+        "recall": 0.009766,
+        "f1": 0.002757,
+        "accuracy": 0.009766,
+        "main_score": 0.002757,
+        "hf_subset": "hin_Deva-pan_Guru",
+        "languages": [
+          "hin-Deva",
+          "pan-Guru"
+        ]
+      },
+      {
+        "precision": 0.368694,
+        "recall": 0.478516,
+        "f1": 0.394418,
+        "accuracy": 0.478516,
+        "main_score": 0.394418,
+        "hf_subset": "hin_Deva-san_Deva",
+        "languages": [
+          "hin-Deva",
+          "san-Deva"
+        ]
+      },
+      {
+        "precision": 1e-06,
+        "recall": 0.000977,
+        "f1": 3e-06,
+        "accuracy": 0.000977,
+        "main_score": 3e-06,
+        "hf_subset": "hin_Deva-sat_Olck",
+        "languages": [
+          "hin-Deva",
+          "sat-Olck"
+        ]
+      },
+      {
+        "precision": 0.511855,
+        "recall": 0.621094,
+        "f1": 0.540871,
+        "accuracy": 0.621094,
+        "main_score": 0.540871,
+        "hf_subset": "hin_Deva-snd_Deva",
+        "languages": [
+          "hin-Deva",
+          "snd-Deva"
+        ]
+      },
+      {
+        "precision": 0.00025,
+        "recall": 0.00293,
+        "f1": 0.000402,
+        "accuracy": 0.00293,
+        "main_score": 0.000402,
+        "hf_subset": "hin_Deva-tam_Taml",
+        "languages": [
+          "hin-Deva",
+          "tam-Taml"
+        ]
+      },
+      {
+        "precision": 0.003112,
+        "recall": 0.009766,
+        "f1": 0.003678,
+        "accuracy": 0.009766,
+        "main_score": 0.003678,
+        "hf_subset": "hin_Deva-tel_Telu",
+        "languages": [
+          "hin-Deva",
+          "tel-Telu"
+        ]
+      },
+      {
+        "precision": 0.001176,
+        "recall": 0.007812,
+        "f1": 0.00136,
+        "accuracy": 0.007812,
+        "main_score": 0.00136,
+        "hf_subset": "hin_Deva-urd_Arab",
+        "languages": [
+          "hin-Deva",
+          "urd-Arab"
+        ]
+      },
+      {
+        "precision": 8.1e-05,
+        "recall": 0.000977,
+        "f1": 0.00015,
+        "accuracy": 0.000977,
+        "main_score": 0.00015,
+        "hf_subset": "kan_Knda-hin_Deva",
+        "languages": [
+          "kan-Knda",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.003771,
+        "recall": 0.006836,
+        "f1": 0.004122,
+        "accuracy": 0.006836,
+        "main_score": 0.004122,
+        "hf_subset": "kas_Arab-hin_Deva",
+        "languages": [
+          "kas-Arab",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.870504,
+        "recall": 0.894531,
+        "f1": 0.877132,
+        "accuracy": 0.894531,
+        "main_score": 0.877132,
+        "hf_subset": "mai_Deva-hin_Deva",
+        "languages": [
+          "mai-Deva",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.001,
+        "recall": 0.00293,
+        "f1": 0.001023,
+        "accuracy": 0.00293,
+        "main_score": 0.001023,
+        "hf_subset": "mal_Mlym-hin_Deva",
+        "languages": [
+          "mal-Mlym",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.381997,
+        "recall": 0.435547,
+        "f1": 0.393704,
+        "accuracy": 0.435547,
+        "main_score": 0.393704,
+        "hf_subset": "mar_Deva-hin_Deva",
+        "languages": [
+          "mar-Deva",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.000141,
+        "recall": 0.001953,
+        "f1": 0.000247,
+        "accuracy": 0.001953,
+        "main_score": 0.000247,
+        "hf_subset": "mni_Mtei-hin_Deva",
+        "languages": [
+          "mni-Mtei",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.66027,
+        "recall": 0.706055,
+        "f1": 0.670926,
+        "accuracy": 0.706055,
+        "main_score": 0.670926,
+        "hf_subset": "npi_Deva-hin_Deva",
+        "languages": [
+          "npi-Deva",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.000141,
+        "recall": 0.001953,
+        "f1": 0.000247,
+        "accuracy": 0.001953,
+        "main_score": 0.000247,
+        "hf_subset": "ory_Orya-hin_Deva",
+        "languages": [
+          "ory-Orya",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 6.6e-05,
+        "recall": 0.001953,
+        "f1": 0.000124,
+        "accuracy": 0.001953,
+        "main_score": 0.000124,
+        "hf_subset": "pan_Guru-hin_Deva",
+        "languages": [
+          "pan-Guru",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.242622,
+        "recall": 0.279297,
+        "f1": 0.249878,
+        "accuracy": 0.279297,
+        "main_score": 0.249878,
+        "hf_subset": "san_Deva-hin_Deva",
+        "languages": [
+          "san-Deva",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.000489,
+        "recall": 0.001953,
+        "f1": 0.000653,
+        "accuracy": 0.001953,
+        "main_score": 0.000653,
+        "hf_subset": "sat_Olck-hin_Deva",
+        "languages": [
+          "sat-Olck",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.468698,
+        "recall": 0.5,
+        "f1": 0.475652,
+        "accuracy": 0.5,
+        "main_score": 0.475652,
+        "hf_subset": "snd_Deva-hin_Deva",
+        "languages": [
+          "snd-Deva",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.000514,
+        "recall": 0.003906,
+        "f1": 0.000702,
+        "accuracy": 0.003906,
+        "main_score": 0.000702,
+        "hf_subset": "tam_Taml-hin_Deva",
+        "languages": [
+          "tam-Taml",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.000449,
+        "recall": 0.00293,
+        "f1": 0.000708,
+        "accuracy": 0.00293,
+        "main_score": 0.000708,
+        "hf_subset": "tel_Telu-hin_Deva",
+        "languages": [
+          "tel-Telu",
+          "hin-Deva"
+        ]
+      },
+      {
+        "precision": 0.001565,
+        "recall": 0.004883,
+        "f1": 0.001893,
+        "accuracy": 0.004883,
+        "main_score": 0.001893,
+        "hf_subset": "urd_Arab-hin_Deva",
+        "languages": [
+          "urd-Arab",
+          "hin-Deva"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 297.00670742988586,
+  "kg_co2_emissions": null
+}

@@ -1,0 +1,25 @@
+{
+    "dataset_revision": "e077ab4cf4774a1e36d86d593b150422fafd8e8a",
+    "task_name": "SICKFr",
+    "evaluation_time": null,
+    "mteb_version": null,
+    "scores": {
+        "test": [
+            {
+                "hf_subset": "default",
+                "languages": [
+                    "fra-Latn"
+                ],
+                "cos_sim_pearson": 0.8135988610550564,
+                "cos_sim_spearman": 0.743070250140539,
+                "euclidean_pearson": 0.7798265846914386,
+                "euclidean_spearman": 0.7428309779423242,
+                "manhattan_pearson": 0.7791611618952485,
+                "manhattan_spearman": 0.7409543847416339,
+                "cosine_pearson": 0.8135988610550564,
+                "cosine_spearman": 0.743070250140539,
+                "main_score": 0.743070250140539
+            }
+        ]
+    }
+}

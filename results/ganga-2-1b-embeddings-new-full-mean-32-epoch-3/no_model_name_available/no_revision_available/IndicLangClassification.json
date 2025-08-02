@@ -1,0 +1,96 @@
+{
+  "dataset_revision": "c54a95d9b9d62c891a03bd5da60715df7176b097",
+  "task_name": "IndicLangClassification",
+  "mteb_version": "1.36.26",
+  "scores": {
+    "test": [
+      {
+        "accuracy": 0.458051,
+        "f1": 0.436763,
+        "f1_weighted": 0.428873,
+        "scores_per_experiment": [
+          {
+            "accuracy": 0.448747,
+            "f1": 0.429297,
+            "f1_weighted": 0.422611
+          },
+          {
+            "accuracy": 0.444737,
+            "f1": 0.435596,
+            "f1_weighted": 0.426155
+          },
+          {
+            "accuracy": 0.457525,
+            "f1": 0.430822,
+            "f1_weighted": 0.434046
+          },
+          {
+            "accuracy": 0.454007,
+            "f1": 0.444941,
+            "f1_weighted": 0.427397
+          },
+          {
+            "accuracy": 0.469689,
+            "f1": 0.449096,
+            "f1_weighted": 0.438292
+          },
+          {
+            "accuracy": 0.460583,
+            "f1": 0.423693,
+            "f1_weighted": 0.422052
+          },
+          {
+            "accuracy": 0.467223,
+            "f1": 0.451882,
+            "f1_weighted": 0.442449
+          },
+          {
+            "accuracy": 0.451114,
+            "f1": 0.425844,
+            "f1_weighted": 0.415316
+          },
+          {
+            "accuracy": 0.457164,
+            "f1": 0.439114,
+            "f1_weighted": 0.429172
+          },
+          {
+            "accuracy": 0.469722,
+            "f1": 0.437343,
+            "f1_weighted": 0.431237
+          }
+        ],
+        "main_score": 0.458051,
+        "hf_subset": "default",
+        "languages": [
+          "asm-Beng",
+          "brx-Deva",
+          "ben-Beng",
+          "doi-Deva",
+          "gom-Deva",
+          "guj-Gujr",
+          "hin-Deva",
+          "kan-Knda",
+          "kas-Arab",
+          "kas-Deva",
+          "mai-Deva",
+          "mal-Mlym",
+          "mar-Deva",
+          "mni-Beng",
+          "mni-Mtei",
+          "npi-Deva",
+          "ory-Orya",
+          "pan-Guru",
+          "san-Deva",
+          "sat-Olck",
+          "snd-Arab",
+          "tam-Taml",
+          "tel-Telu",
+          "urd-Arab"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 329.2300326824188,
+  "kg_co2_emissions": null
+}

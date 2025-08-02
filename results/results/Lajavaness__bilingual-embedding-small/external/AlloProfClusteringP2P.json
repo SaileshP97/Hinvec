@@ -1,0 +1,25 @@
+{
+    "dataset_revision": "392ba3f5bcc8c51f578786c1fc3dae648662cb9b",
+    "task_name": "AlloProfClusteringP2P",
+    "evaluation_time": null,
+    "mteb_version": null,
+    "scores": {
+        "test": [
+            {
+                "hf_subset": "default",
+                "languages": [
+                    "fra-Latn"
+                ],
+                "v_measure": 0.6319030822769444,
+                "v_measures": [
+                    0.5938891912573394,
+                    0.6171518411959,
+                    0.6042518292029612,
+                    0.6626602879382325,
+                    0.6471224639325329
+                ],
+                "main_score": 0.6319030822769444
+            }
+        ]
+    }
+}

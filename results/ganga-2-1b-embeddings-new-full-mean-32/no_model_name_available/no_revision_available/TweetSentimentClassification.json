@@ -1,0 +1,73 @@
+{
+  "dataset_revision": "d522bb117c32f5e0207344f69f7075fc9941168b",
+  "task_name": "TweetSentimentClassification",
+  "mteb_version": "1.36.26",
+  "scores": {
+    "test": [
+      {
+        "accuracy": 0.353516,
+        "f1": 0.34497,
+        "f1_weighted": 0.344893,
+        "scores_per_experiment": [
+          {
+            "accuracy": 0.289062,
+            "f1": 0.284165,
+            "f1_weighted": 0.283943
+          },
+          {
+            "accuracy": 0.417969,
+            "f1": 0.417365,
+            "f1_weighted": 0.41734
+          },
+          {
+            "accuracy": 0.3125,
+            "f1": 0.30991,
+            "f1_weighted": 0.310028
+          },
+          {
+            "accuracy": 0.429688,
+            "f1": 0.424525,
+            "f1_weighted": 0.424477
+          },
+          {
+            "accuracy": 0.332031,
+            "f1": 0.331335,
+            "f1_weighted": 0.331286
+          },
+          {
+            "accuracy": 0.289062,
+            "f1": 0.263634,
+            "f1_weighted": 0.263133
+          },
+          {
+            "accuracy": 0.292969,
+            "f1": 0.270381,
+            "f1_weighted": 0.269841
+          },
+          {
+            "accuracy": 0.367188,
+            "f1": 0.358086,
+            "f1_weighted": 0.358348
+          },
+          {
+            "accuracy": 0.449219,
+            "f1": 0.447832,
+            "f1_weighted": 0.447908
+          },
+          {
+            "accuracy": 0.355469,
+            "f1": 0.342467,
+            "f1_weighted": 0.34263
+          }
+        ],
+        "main_score": 0.353516,
+        "hf_subset": "hindi",
+        "languages": [
+          "hin-Deva"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 7.1869118213653564,
+  "kg_co2_emissions": null
+}

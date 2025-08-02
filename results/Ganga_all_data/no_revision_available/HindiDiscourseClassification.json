@@ -1,0 +1,73 @@
+{
+  "dataset_revision": "218ce687943a0da435d6d62751a4ab216be6cd40",
+  "task_name": "HindiDiscourseClassification",
+  "mteb_version": "1.36.26",
+  "scores": {
+    "train": [
+      {
+        "accuracy": 0.36709,
+        "f1": 0.335021,
+        "f1_weighted": 0.407979,
+        "scores_per_experiment": [
+          {
+            "accuracy": 0.354004,
+            "f1": 0.316523,
+            "f1_weighted": 0.398273
+          },
+          {
+            "accuracy": 0.389648,
+            "f1": 0.365496,
+            "f1_weighted": 0.428957
+          },
+          {
+            "accuracy": 0.385742,
+            "f1": 0.359576,
+            "f1_weighted": 0.427421
+          },
+          {
+            "accuracy": 0.376953,
+            "f1": 0.345476,
+            "f1_weighted": 0.412738
+          },
+          {
+            "accuracy": 0.338867,
+            "f1": 0.316432,
+            "f1_weighted": 0.388179
+          },
+          {
+            "accuracy": 0.331055,
+            "f1": 0.317745,
+            "f1_weighted": 0.378103
+          },
+          {
+            "accuracy": 0.351074,
+            "f1": 0.310908,
+            "f1_weighted": 0.414533
+          },
+          {
+            "accuracy": 0.413086,
+            "f1": 0.352791,
+            "f1_weighted": 0.453038
+          },
+          {
+            "accuracy": 0.406738,
+            "f1": 0.345234,
+            "f1_weighted": 0.424147
+          },
+          {
+            "accuracy": 0.32373,
+            "f1": 0.32003,
+            "f1_weighted": 0.354403
+          }
+        ],
+        "main_score": 0.36709,
+        "hf_subset": "default",
+        "languages": [
+          "hin-Deva"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 18.505326747894287,
+  "kg_co2_emissions": null
+}

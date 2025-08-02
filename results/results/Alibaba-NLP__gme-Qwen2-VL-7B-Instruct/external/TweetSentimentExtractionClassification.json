@@ -1,0 +1,19 @@
+{
+    "dataset_revision": "d604517c81ca91fe16a244d1248fc021f9ecee7a",
+    "task_name": "TweetSentimentExtractionClassification",
+    "evaluation_time": null,
+    "mteb_version": null,
+    "scores": {
+        "test": [
+            {
+                "hf_subset": "default",
+                "languages": [
+                    "eng-Latn"
+                ],
+                "accuracy": 0.7780418788907753,
+                "f1": 0.781047638421972,
+                "main_score": 0.7780418788907753
+            }
+        ]
+    }
+}

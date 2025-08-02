@@ -1,0 +1,26 @@
+{
+  "dataset_revision": "6268b37d6f975f2a134791ba2f250a91d0bdfb4f",
+  "task_name": "WikipediaRerankingMultilingual",
+  "mteb_version": "1.36.26",
+  "scores": {
+    "test": [
+      {
+        "map": 0.732953,
+        "mrr": 0.733731,
+        "nAUC_map_max": 0.306056,
+        "nAUC_map_std": 0.285933,
+        "nAUC_map_diff1": 0.594354,
+        "nAUC_mrr_max": 0.309233,
+        "nAUC_mrr_std": 0.290634,
+        "nAUC_mrr_diff1": 0.591805,
+        "main_score": 0.732953,
+        "hf_subset": "hi",
+        "languages": [
+          "hin-Deva"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 244.0716736316681,
+  "kg_co2_emissions": null
+}

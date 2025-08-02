@@ -1,0 +1,23 @@
+{
+  "dataset_revision": "483f2494f76fdc04acbbdbbac129de1925b34215",
+  "task_name": "LinceMTBitextMining",
+  "mteb_version": "1.36.26",
+  "scores": {
+    "train": [
+      {
+        "precision": 0.043907,
+        "recall": 0.079787,
+        "f1": 0.050459,
+        "accuracy": 0.079787,
+        "main_score": 0.050459,
+        "hf_subset": "eng-eng_hin",
+        "languages": [
+          "eng-Latn",
+          "hin-Latn"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 63.295143365859985,
+  "kg_co2_emissions": null
+}

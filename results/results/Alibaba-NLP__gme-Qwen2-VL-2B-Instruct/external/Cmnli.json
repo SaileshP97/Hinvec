@@ -1,0 +1,40 @@
+{
+    "dataset_revision": "41bc36f332156f7adc9e38f53777c959b2ae9766",
+    "task_name": "Cmnli",
+    "evaluation_time": null,
+    "mteb_version": null,
+    "scores": {
+        "validation": [
+            {
+                "hf_subset": "default",
+                "languages": [
+                    "cmn-Hans"
+                ],
+                "cos_sim_accuracy": 0.7612748045700541,
+                "cos_sim_ap": 0.8447948419710998,
+                "cos_sim_f1": 0.7788108108108108,
+                "cos_sim_precision": 0.7243112809169516,
+                "cos_sim_recall": 0.8421790974982464,
+                "dot_accuracy": 0.7612748045700541,
+                "dot_ap": 0.8449332378397859,
+                "dot_f1": 0.7788108108108108,
+                "dot_precision": 0.7243112809169516,
+                "dot_recall": 0.8421790974982464,
+                "euclidean_accuracy": 0.7612748045700541,
+                "euclidean_ap": 0.8447947997540409,
+                "euclidean_f1": 0.7788108108108108,
+                "euclidean_precision": 0.7243112809169516,
+                "euclidean_recall": 0.8421790974982464,
+                "manhattan_accuracy": 0.7540589296452196,
+                "manhattan_ap": 0.8374383956930584,
+                "manhattan_f1": 0.7709833422890919,
+                "manhattan_precision": 0.7134049323786794,
+                "manhattan_recall": 0.8386719663315408,
+                "max_accuracy": 0.7612748045700541,
+                "max_ap": 0.8449332378397859,
+                "max_f1": 0.7788108108108108,
+                "main_score": 0.7612748045700541
+            }
+        ]
+    }
+}

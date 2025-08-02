@@ -1,0 +1,137 @@
+{
+  "dataset_revision": "ae001d0e6b1228650b7bd1c2c65fb50ad11a8aba",
+  "task_name": "MTOPIntentClassification",
+  "mteb_version": "1.36.26",
+  "scores": {
+    "validation": [
+      {
+        "accuracy": 0.59995,
+        "f1": 0.328825,
+        "f1_weighted": 0.619392,
+        "scores_per_experiment": [
+          {
+            "accuracy": 0.569085,
+            "f1": 0.316636,
+            "f1_weighted": 0.579821
+          },
+          {
+            "accuracy": 0.614314,
+            "f1": 0.32593,
+            "f1_weighted": 0.63004
+          },
+          {
+            "accuracy": 0.629722,
+            "f1": 0.348251,
+            "f1_weighted": 0.651531
+          },
+          {
+            "accuracy": 0.577535,
+            "f1": 0.305616,
+            "f1_weighted": 0.604653
+          },
+          {
+            "accuracy": 0.610338,
+            "f1": 0.327282,
+            "f1_weighted": 0.631883
+          },
+          {
+            "accuracy": 0.614314,
+            "f1": 0.340768,
+            "f1_weighted": 0.642705
+          },
+          {
+            "accuracy": 0.587972,
+            "f1": 0.318234,
+            "f1_weighted": 0.609947
+          },
+          {
+            "accuracy": 0.633698,
+            "f1": 0.364382,
+            "f1_weighted": 0.651439
+          },
+          {
+            "accuracy": 0.574553,
+            "f1": 0.316101,
+            "f1_weighted": 0.588625
+          },
+          {
+            "accuracy": 0.587972,
+            "f1": 0.325053,
+            "f1_weighted": 0.603274
+          }
+        ],
+        "main_score": 0.59995,
+        "hf_subset": "hi",
+        "languages": [
+          "hin-Deva"
+        ]
+      }
+    ],
+    "test": [
+      {
+        "accuracy": 0.603944,
+        "f1": 0.307152,
+        "f1_weighted": 0.622007,
+        "scores_per_experiment": [
+          {
+            "accuracy": 0.59161,
+            "f1": 0.298232,
+            "f1_weighted": 0.600364
+          },
+          {
+            "accuracy": 0.620294,
+            "f1": 0.311406,
+            "f1_weighted": 0.630612
+          },
+          {
+            "accuracy": 0.636787,
+            "f1": 0.325367,
+            "f1_weighted": 0.66123
+          },
+          {
+            "accuracy": 0.581212,
+            "f1": 0.277256,
+            "f1_weighted": 0.608049
+          },
+          {
+            "accuracy": 0.603084,
+            "f1": 0.293364,
+            "f1_weighted": 0.619393
+          },
+          {
+            "accuracy": 0.623162,
+            "f1": 0.319309,
+            "f1_weighted": 0.646983
+          },
+          {
+            "accuracy": 0.592686,
+            "f1": 0.311556,
+            "f1_weighted": 0.617118
+          },
+          {
+            "accuracy": 0.623521,
+            "f1": 0.323849,
+            "f1_weighted": 0.637371
+          },
+          {
+            "accuracy": 0.581212,
+            "f1": 0.306231,
+            "f1_weighted": 0.595594
+          },
+          {
+            "accuracy": 0.585873,
+            "f1": 0.304951,
+            "f1_weighted": 0.603359
+          }
+        ],
+        "main_score": 0.603944,
+        "hf_subset": "hi",
+        "languages": [
+          "hin-Deva"
+        ]
+      }
+    ]
+  },
+  "evaluation_time": 41.154478549957275,
+  "kg_co2_emissions": null
+}
